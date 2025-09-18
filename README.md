@@ -1,50 +1,40 @@
-# Multimodal RAG Q&A App
+# RAG Q&A App (Streamlit, Local)
 
-An advanced **Retrieval-Augmented Generation (RAG)** question-answering system built with **Streamlit**, **FAISS**, and **Hugging Face**. This app processes various document types; including PDF, DOCX, TXT, and web links, creates vector embeddings, and implements a powerful Q&A interface.
-
+A modular Retrieval-Augmented Generation app that ingests Links / PDF / DOCX / TXT / **Audio**, builds a FAISS index with `all-mpnet-base-v2`, and answers questions using a **local LLM** (`microsoft/phi-2` by default).
 
 ## Features
+- Multi-source ingestion with clean loaders
+- Robust chunking (RecursiveCharacterTextSplitter)
+- Cosine-ready embeddings (normalized) + FAISS
+- Index **save/load** to avoid re-indexing
+- Source previews with optional audio timestamps
+- Optional local ASR backends: `faster-whisper` (recommended) or `transformers`
+- Config via env vars
+- **No external API needed** (runs offline once models are downloaded)
 
-- Process multiple document types: PDF, DOCX, TXT, and URLs (audio files coming soon!)
-- Create vector embeddings for documents using Hugging Face models
-- Efficient similarity search with FAISS indexing
-- Interactive user interface powered by Streamlit
-- Retrieval-Augmented Generation for accurate and context-aware answers
-- **Voice input support** (coming soon) for spoken questions
+## Quickstart
+```bash
+python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
 
-## How It Works
+### Model Downloads
+On first run, Hugging Face Transformers will download:
+- **`microsoft/phi-2`** (~6 GB) for the LLM
+- **`all-mpnet-base-v2`** (~400 MB) for embeddings
 
-1. **Document Ingestion:** Upload or provide documents and web links.
-2. **Embedding Generation:** Convert the document content into vector embeddings.
-3. **Indexing:** Store embeddings in a FAISS index for fast retrieval.
-4. **Query Processing:** Retrieve relevant documents and generate answers using Hugging Face language models.
+These are cached locally in `~/.cache/huggingface/transformers` and reused.
 
-## In development:
-1. **Transcription (for audio):** Convert voice documents to text using speech-to-text models.
-2. **Voice Input:** (In development) Speak your questions instead of typing.
+## Config (env vars)
+- `HF_REPO_ID` – default `microsoft/phi-2`
+- `CHUNK_SIZE` (default 1000), `CHUNK_OVERLAP` (120)
+- `INDEX_DIR` (default `./index_store`)
+- `TOP_K` (default 4)
+- `DEVICE` – `cuda` | `cpu` | `auto`
+- `ASR_MODEL` – e.g. `large-v3` (faster-whisper) or `openai/whisper-small` (transformers)
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.8 or higher
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/your-username/multimodal-rag-qa-app.git
-   cd multimodal-rag-qa-app
-   ```
-
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-    ```
-
-3. Run the app
-   ```bash
-   streamlit run app.py
-   ```
+## Tests
+```bash
+pytest -q
+```
