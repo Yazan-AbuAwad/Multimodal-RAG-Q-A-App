@@ -38,3 +38,12 @@ These are cached locally in `~/.cache/huggingface/transformers` and reused.
 ```bash
 pytest -q
 ```
+
+## Roadmap
+- Optional reranker (e.g., cross-encoder)
+- Hybrid retrieval (BM25 + dense)
+- Highlighted source spans
+- Basic eval notebook in `examples/`
+
+## License
+MIT
